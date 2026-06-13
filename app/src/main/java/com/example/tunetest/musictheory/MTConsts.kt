@@ -11,6 +11,7 @@ object MTConsts {
         "Major 3rd", "Perfect 4th", "Tritone", "Perfect 5th",
         "Minor 6th", "Major 6th", "Minor 7th", "Major 7th", "Octave"
     )
+    val TRIAD_QUALITY_LIST = TriadQuality.entries.map { q -> q.name }
 
     const val FIRST_MIDI_NUMBER = 60
     const val LAST_MIDI_NUMBER = 71
