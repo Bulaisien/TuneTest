@@ -135,6 +135,7 @@ private fun PlayScreen(
     var answeredCount by remember(mode) { mutableIntStateOf(0) }
     var correctCount by remember(mode) { mutableIntStateOf(0) }
     var lastAnswerWasCorrect by remember(mode) { mutableStateOf<Boolean?>(null) }
+    var hasAnsweredCurrentQuestion by remember(mode) { mutableStateOf(false) }
     val session = remember(mode) { Session(mode) }
 
     Column(
@@ -161,12 +162,27 @@ private fun PlayScreen(
 
         AnswerChoices(
             choices = mode.choices,
+            enabled = !hasAnsweredCurrentQuestion,
             onAnswerSelected = { answerIndex ->
                 lastAnswerWasCorrect = session.submitAnswer(answerIndex)
                 answeredCount = session.answeredCount
                 correctCount = session.correctCount
+                hasAnsweredCurrentQuestion = session.hasAnsweredCurrentQuestion
             }
         )
+
+        Button(
+            onClick = {
+                session.nextQuestion()
+                lastAnswerWasCorrect = null
+                hasAnsweredCurrentQuestion = session.hasAnsweredCurrentQuestion
+            },
+            enabled = hasAnsweredCurrentQuestion,
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(18.dp)
+        ) {
+            Text("Next question")
+        }
 
         OutlinedButton(
             onClick = onBack,
@@ -216,6 +232,7 @@ private fun Header(
 @Composable
 private fun AnswerChoices(
     choices: List<String>,
+    enabled: Boolean,
     onAnswerSelected: (Int) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -234,6 +251,7 @@ private fun AnswerChoices(
                     rowChoices.forEach { (index, choice) ->
                         ElevatedButton(
                             onClick = { onAnswerSelected(index) },
+                            enabled = enabled,
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(14.dp)
                         ) {

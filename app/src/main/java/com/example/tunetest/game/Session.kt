@@ -11,16 +11,24 @@ class Session(
 
     var currentQuestion: Question = questionGenerator.generate()
         private set
+    var hasAnsweredCurrentQuestion: Boolean = false
+        private set
 
     fun submitAnswer(answerIndex: Int): Boolean {
         require(answerIndex in mode.choices.indices) { "Answer index is outside the mode choices" }
+        check(!hasAnsweredCurrentQuestion) { "Current question has already been answered" }
 
         val isCorrect = answerIndex == currentQuestion.correctAnswerIndex
         answeredCount += 1
         if (isCorrect) {
             correctCount += 1
         }
-        currentQuestion = questionGenerator.generate()
+        hasAnsweredCurrentQuestion = true
         return isCorrect
+    }
+
+    fun nextQuestion() {
+        currentQuestion = questionGenerator.generate()
+        hasAnsweredCurrentQuestion = false
     }
 }

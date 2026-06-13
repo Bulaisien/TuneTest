@@ -25,10 +25,11 @@ class SessionTest {
         assertSame(firstQuestion, session.currentQuestion)
         assertEquals(0, session.answeredCount)
         assertEquals(0, session.correctCount)
+        assertFalse(session.hasAnsweredCurrentQuestion)
     }
 
     @Test
-    fun correctAnswerIncrementsAnsweredAndCorrectCountsThenAdvancesQuestion() {
+    fun correctAnswerIncrementsAnsweredAndCorrectCountsWithoutAdvancingQuestion() {
         val firstQuestion = question(correctAnswerIndex = 2)
         val secondQuestion = question(correctAnswerIndex = 5)
         val session = Session(
@@ -41,11 +42,12 @@ class SessionTest {
         assertTrue(wasCorrect)
         assertEquals(1, session.answeredCount)
         assertEquals(1, session.correctCount)
-        assertSame(secondQuestion, session.currentQuestion)
+        assertTrue(session.hasAnsweredCurrentQuestion)
+        assertSame(firstQuestion, session.currentQuestion)
     }
 
     @Test
-    fun incorrectAnswerIncrementsOnlyAnsweredCountThenAdvancesQuestion() {
+    fun incorrectAnswerIncrementsOnlyAnsweredCountWithoutAdvancingQuestion() {
         val firstQuestion = question(correctAnswerIndex = 2)
         val secondQuestion = question(correctAnswerIndex = 5)
         val session = Session(
@@ -58,7 +60,40 @@ class SessionTest {
         assertFalse(wasCorrect)
         assertEquals(1, session.answeredCount)
         assertEquals(0, session.correctCount)
+        assertTrue(session.hasAnsweredCurrentQuestion)
+        assertSame(firstQuestion, session.currentQuestion)
+    }
+
+    @Test
+    fun nextQuestionAdvancesAfterAnswer() {
+        val firstQuestion = question(correctAnswerIndex = 2)
+        val secondQuestion = question(correctAnswerIndex = 5)
+        val session = Session(
+            mode = GameMode.SINGLE_NOTE,
+            questionGenerator = FakeQuestionGenerator(firstQuestion, secondQuestion)
+        )
+
+        session.submitAnswer(2)
+        session.nextQuestion()
+
         assertSame(secondQuestion, session.currentQuestion)
+        assertFalse(session.hasAnsweredCurrentQuestion)
+        assertEquals(1, session.answeredCount)
+        assertEquals(1, session.correctCount)
+    }
+
+    @Test
+    fun rejectsSubmittingMoreThanOneAnswerForCurrentQuestion() {
+        val session = Session(
+            mode = GameMode.SINGLE_NOTE,
+            questionGenerator = FakeQuestionGenerator(question(correctAnswerIndex = 0))
+        )
+
+        session.submitAnswer(0)
+
+        assertThrows(IllegalStateException::class.java) {
+            session.submitAnswer(0)
+        }
     }
 
     @Test
