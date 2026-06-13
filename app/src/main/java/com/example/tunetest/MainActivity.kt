@@ -104,11 +104,7 @@ private fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        Text(
-            text = "TuneTest",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
-        )
+        TuneTestTitle()
         Text(
             text = "Choose a challenge",
             style = MaterialTheme.typography.titleMedium
@@ -164,7 +160,7 @@ private fun PlayScreen(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(18.dp)
         ) {
-            Text("Play question")
+            Text("Play audio")
         }
 
         AnswerChoices(
@@ -205,17 +201,22 @@ private fun PlayScreen(
 }
 
 @Composable
+private fun TuneTestTitle() {
+    Text(
+        text = "Tune Test",
+        style = MaterialTheme.typography.headlineLarge,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
 private fun Header(
     mode: GameMode,
     correctCount: Int,
     answeredCount: Int
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = "TuneTest",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
-        )
+        TuneTestTitle()
         Text(
             text = mode.label,
             style = MaterialTheme.typography.titleMedium
