@@ -43,10 +43,10 @@ class AudioTrackPcmPlayerTest {
                 "create",
                 "first.write",
                 "first.play",
+                "run",
                 "first.pause",
                 "first.flush",
                 "first.release",
-                "run",
                 "create",
                 "second.write",
                 "second.play"
@@ -74,9 +74,11 @@ class AudioTrackPcmPlayerTest {
                 "create",
                 "first.write",
                 "first.play",
+                "run",
                 "first.pause",
                 "first.flush",
                 "first.release",
+                "run",
                 "run",
                 "create",
                 "second.write",
@@ -98,7 +100,7 @@ class AudioTrackPcmPlayerTest {
         player.play(shortArrayOf(1))
         player.stop()
 
-        assertEquals(listOf("run", "create", "write", "play", "pause", "release"), calls)
+        assertEquals(listOf("run", "create", "write", "play", "run", "pause", "release"), calls)
     }
 
     @Test
@@ -113,7 +115,7 @@ class AudioTrackPcmPlayerTest {
         player.play(shortArrayOf(1))
         player.stop()
 
-        assertEquals(listOf("run", "create", "write", "play", "pause", "flush", "release"), calls)
+        assertEquals(listOf("run", "create", "write", "play", "run", "pause", "flush", "release"), calls)
     }
 
     private class ImmediatePlaybackRunner(

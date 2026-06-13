@@ -5,7 +5,7 @@ import android.media.AudioFormat
 import android.media.AudioTrack
 import com.example.tunetest.audio.pcm.PcmAudioConfig.SAMPLE_RATE
 import com.example.tunetest.audio.PlaybackRunner
-import kotlin.concurrent.thread
+import java.util.concurrent.Executors
 
 class AudioTrackPcmPlayer(
     private val trackFactory: PcmTrackFactory = AudioTrackFactory(),
@@ -14,13 +14,19 @@ class AudioTrackPcmPlayer(
     private var currentTrack: PcmTrack? = null
 
     override fun play(samples: ShortArray) {
-        stop()
         playbackRunner.run {
+            stopCurrentTrack()
             playSamples(samples)
         }
     }
 
     override fun stop() {
+        playbackRunner.run {
+            stopCurrentTrack()
+        }
+    }
+
+    private fun stopCurrentTrack() {
         currentTrack?.let {
             try {
                 it.pause()
@@ -92,9 +98,11 @@ class AndroidPcmTrack(
 }
 
 class ThreadPlaybackRunner : PlaybackRunner {
+    private val executor = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable, "SynthAudioEngine")
+    }
+
     override fun run(block: () -> Unit) {
-        thread(name = "SynthAudioEngine") {
-            block()
-        }
+        executor.execute(block)
     }
 }
