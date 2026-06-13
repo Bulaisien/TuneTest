@@ -1,8 +1,8 @@
 package com.example.tunetest
 
 import com.example.tunetest.audio.AudioPrompt
-import com.example.tunetest.audio.PcmPlayer
-import com.example.tunetest.audio.PcmSynthesizer
+import com.example.tunetest.audio.pcm.PcmPlayer
+import com.example.tunetest.audio.pcm.PcmSynthesizer
 import com.example.tunetest.audio.SynthAudioEngine
 import com.example.tunetest.musictheory.Note
 import org.junit.Assert.assertEquals

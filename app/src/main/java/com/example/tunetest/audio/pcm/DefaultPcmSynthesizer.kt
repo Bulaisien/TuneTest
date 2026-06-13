@@ -1,7 +1,8 @@
-package com.example.tunetest.audio
+package com.example.tunetest.audio.pcm
 
-import com.example.tunetest.audio.PcmAudioConfig.MAX_AMPLITUDE
-import com.example.tunetest.audio.PcmAudioConfig.SAMPLE_RATE
+import com.example.tunetest.audio.AudioPrompt
+import com.example.tunetest.audio.pcm.PcmAudioConfig.MAX_AMPLITUDE
+import com.example.tunetest.audio.pcm.PcmAudioConfig.SAMPLE_RATE
 import com.example.tunetest.audio.DurationConfig.ATTACK_SECONDS
 import com.example.tunetest.audio.DurationConfig.INTERVAL_SILENCE_SECONDS
 import com.example.tunetest.audio.DurationConfig.INTERVAL_TONE_SECONDS

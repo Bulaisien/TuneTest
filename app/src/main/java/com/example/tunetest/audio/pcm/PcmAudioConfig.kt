@@ -1,4 +1,4 @@
-package com.example.tunetest.audio
+package com.example.tunetest.audio.pcm
 
 object PcmAudioConfig {
     const val SAMPLE_RATE = 44_100

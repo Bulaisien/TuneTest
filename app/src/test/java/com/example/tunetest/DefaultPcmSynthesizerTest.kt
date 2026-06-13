@@ -1,15 +1,15 @@
 package com.example.tunetest
 
 import com.example.tunetest.audio.AudioPrompt
-import com.example.tunetest.audio.DefaultPcmSynthesizer
+import com.example.tunetest.audio.pcm.DefaultPcmSynthesizer
 import com.example.tunetest.audio.DurationConfig.ATTACK_SECONDS
 import com.example.tunetest.audio.DurationConfig.INTERVAL_SILENCE_SECONDS
 import com.example.tunetest.audio.DurationConfig.INTERVAL_TONE_SECONDS
 import com.example.tunetest.audio.DurationConfig.RELEASE_SECONDS
 import com.example.tunetest.audio.DurationConfig.SINGLE_NOTE_SECONDS
 import com.example.tunetest.audio.DurationConfig.TRIAD_SECONDS
-import com.example.tunetest.audio.PcmAudioConfig.MAX_AMPLITUDE
-import com.example.tunetest.audio.PcmAudioConfig.SAMPLE_RATE
+import com.example.tunetest.audio.pcm.PcmAudioConfig.MAX_AMPLITUDE
+import com.example.tunetest.audio.pcm.PcmAudioConfig.SAMPLE_RATE
 import com.example.tunetest.musictheory.Note
 import com.example.tunetest.musictheory.TriadQuality
 import org.junit.Assert.assertEquals
