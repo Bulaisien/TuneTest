@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -138,7 +139,12 @@ private fun PlayScreen(
     var correctCount by remember(mode) { mutableIntStateOf(0) }
     var selectedAnswerIndex by remember(mode) { mutableStateOf<Int?>(null) }
     var hasAnsweredCurrentQuestion by remember(mode) { mutableStateOf(false) }
+    var questionVersion by remember(mode) { mutableIntStateOf(0) }
     val session = remember(mode) { Session(mode) }
+
+    LaunchedEffect(mode, questionVersion) {
+        onPlayPrompt(session)
+    }
 
     Column(
         modifier = modifier
@@ -180,6 +186,7 @@ private fun PlayScreen(
                 session.nextQuestion()
                 selectedAnswerIndex = null
                 hasAnsweredCurrentQuestion = session.hasAnsweredCurrentQuestion
+                questionVersion += 1
             },
             enabled = hasAnsweredCurrentQuestion,
             modifier = Modifier.fillMaxWidth(),
@@ -229,11 +236,6 @@ private fun AnswerChoices(
     onAnswerSelected: (Int) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = "Answer",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
         choices.mapIndexed { index, choice -> index to choice }
             .chunked(2)
             .forEach { rowChoices ->
