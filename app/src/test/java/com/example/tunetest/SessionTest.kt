@@ -6,6 +6,7 @@ import com.example.tunetest.game.Question
 import com.example.tunetest.game.QuestionGenerator
 import com.example.tunetest.game.Session
 import com.example.tunetest.musictheory.Note
+import com.example.tunetest.settings.MusicTheorySettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
@@ -104,7 +105,7 @@ class SessionTest {
         )
 
         assertThrows(IllegalArgumentException::class.java) {
-            session.submitAnswer(GameMode.SINGLE_NOTE.choices.size)
+            session.submitAnswer(GameMode.SINGLE_NOTE.choices(MusicTheorySettings()).size)
         }
     }
 
@@ -120,7 +121,7 @@ class SessionTest {
     ) : QuestionGenerator {
         private var index = 0
 
-        override fun generate(): Question {
+        override fun generate(settings: MusicTheorySettings): Question {
             return questions[index++]
         }
     }

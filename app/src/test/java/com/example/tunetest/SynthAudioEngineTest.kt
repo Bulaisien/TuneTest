@@ -5,6 +5,7 @@ import com.example.tunetest.audio.pcm.PcmPlayer
 import com.example.tunetest.audio.pcm.PcmSynthesizer
 import com.example.tunetest.audio.SynthAudioEngine
 import com.example.tunetest.musictheory.Note
+import com.example.tunetest.settings.DurationSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Test
@@ -18,10 +19,12 @@ class SynthAudioEngineTest {
         val synthesizer = FakePcmSynthesizer(renderedSamples, calls)
         val player = FakePcmPlayer(calls)
         val engine = SynthAudioEngine(synthesizer, player)
+        val durationSettings = DurationSettings(singleNoteSeconds = 2.0)
 
-        engine.play(prompt)
+        engine.play(prompt, durationSettings)
 
         assertEquals(prompt, synthesizer.renderedPrompt)
+        assertEquals(durationSettings, synthesizer.renderedDurationSettings)
         assertSame(renderedSamples, player.playedSamples)
         assertEquals(listOf("render", "play"), calls)
     }
@@ -45,10 +48,16 @@ class SynthAudioEngineTest {
     ) : PcmSynthesizer {
         var renderedPrompt: AudioPrompt? = null
             private set
+        var renderedDurationSettings: DurationSettings? = null
+            private set
 
-        override fun render(prompt: AudioPrompt): ShortArray {
+        override fun render(
+            prompt: AudioPrompt,
+            durationSettings: DurationSettings
+        ): ShortArray {
             calls += "render"
             renderedPrompt = prompt
+            renderedDurationSettings = durationSettings
             return samples
         }
     }
