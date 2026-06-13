@@ -72,12 +72,70 @@ fun GameScreen(
     modifier: Modifier = Modifier,
     onPlayPrompt: (Session) -> Unit
 ) {
-    var mode by remember { mutableStateOf(GameMode.SINGLE_NOTE) }
-    var sessionNonce by remember { mutableIntStateOf(0) }
-    var answeredCount by remember(mode, sessionNonce) { mutableIntStateOf(0) }
-    var correctCount by remember(mode, sessionNonce) { mutableIntStateOf(0) }
-    var lastAnswerWasCorrect by remember(mode, sessionNonce) { mutableStateOf<Boolean?>(null) }
-    val session = remember(mode, sessionNonce) { Session(mode) }
+    var selectedMode by remember { mutableStateOf<GameMode?>(null) }
+
+    if (selectedMode == null) {
+        HomeScreen(
+            modifier = modifier,
+            onModeSelected = { mode -> selectedMode = mode }
+        )
+    } else {
+        PlayScreen(
+            mode = selectedMode!!,
+            modifier = modifier,
+            onBack = { selectedMode = null },
+            onPlayPrompt = onPlayPrompt
+        )
+    }
+}
+
+@Composable
+private fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onModeSelected: (GameMode) -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "TuneTest",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Choose a challenge",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            GameMode.entries.forEach { mode ->
+                Button(
+                    onClick = { onModeSelected(mode) },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(18.dp)
+                ) {
+                    Text(mode.label)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayScreen(
+    mode: GameMode,
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    onPlayPrompt: (Session) -> Unit
+) {
+    var answeredCount by remember(mode) { mutableIntStateOf(0) }
+    var correctCount by remember(mode) { mutableIntStateOf(0) }
+    var lastAnswerWasCorrect by remember(mode) { mutableStateOf<Boolean?>(null) }
+    val session = remember(mode) { Session(mode) }
 
     Column(
         modifier = modifier
@@ -91,14 +149,6 @@ fun GameScreen(
             correctCount = correctCount,
             answeredCount = answeredCount,
             lastAnswerWasCorrect = lastAnswerWasCorrect
-        )
-
-        ModeSelector(
-            selectedMode = mode,
-            onModeSelected = { selectedMode ->
-                mode = selectedMode
-                sessionNonce = 0
-            }
         )
 
         Button(
@@ -119,12 +169,10 @@ fun GameScreen(
         )
 
         OutlinedButton(
-            onClick = {
-                sessionNonce += 1
-            },
+            onClick = onBack,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("New session")
+            Text("Back")
         }
     }
 }
@@ -161,34 +209,6 @@ private fun Header(
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
             )
-        }
-    }
-}
-
-@Composable
-private fun ModeSelector(
-    selectedMode: GameMode,
-    onModeSelected: (GameMode) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = "Mode",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            GameMode.entries.forEach { mode ->
-                val selected = mode == selectedMode
-                if (selected) {
-                    Button(onClick = { onModeSelected(mode) }) {
-                        Text(mode.label)
-                    }
-                } else {
-                    OutlinedButton(onClick = { onModeSelected(mode) }) {
-                        Text(mode.label)
-                    }
-                }
-            }
         }
     }
 }
