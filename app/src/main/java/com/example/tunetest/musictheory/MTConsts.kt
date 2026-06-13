@@ -16,8 +16,8 @@ object MTConsts {
         it.name.lowercase().replaceFirstChar(Char::uppercase)
     }
 
-    const val FIRST_MIDI_NUMBER = 60
-    const val LAST_MIDI_NUMBER = 71
+    const val FIRST_MIDI_NUMBER = 54
+    const val LAST_MIDI_NUMBER = 77
     val MIDI_TO_NAME: Map<Int, String> =
         (FIRST_MIDI_NUMBER..LAST_MIDI_NUMBER).associateWith { midiToName(it) }
 
