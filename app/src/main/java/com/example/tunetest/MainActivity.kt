@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -134,7 +136,7 @@ private fun PlayScreen(
 ) {
     var answeredCount by remember(mode) { mutableIntStateOf(0) }
     var correctCount by remember(mode) { mutableIntStateOf(0) }
-    var lastAnswerWasCorrect by remember(mode) { mutableStateOf<Boolean?>(null) }
+    var selectedAnswerIndex by remember(mode) { mutableStateOf<Int?>(null) }
     var hasAnsweredCurrentQuestion by remember(mode) { mutableStateOf(false) }
     val session = remember(mode) { Session(mode) }
 
@@ -148,8 +150,7 @@ private fun PlayScreen(
         Header(
             mode = mode,
             correctCount = correctCount,
-            answeredCount = answeredCount,
-            lastAnswerWasCorrect = lastAnswerWasCorrect
+            answeredCount = answeredCount
         )
 
         Button(
@@ -163,8 +164,11 @@ private fun PlayScreen(
         AnswerChoices(
             choices = mode.choices,
             enabled = !hasAnsweredCurrentQuestion,
+            selectedAnswerIndex = selectedAnswerIndex,
+            correctAnswerIndex = session.currentQuestion.correctAnswerIndex,
             onAnswerSelected = { answerIndex ->
-                lastAnswerWasCorrect = session.submitAnswer(answerIndex)
+                session.submitAnswer(answerIndex)
+                selectedAnswerIndex = answerIndex
                 answeredCount = session.answeredCount
                 correctCount = session.correctCount
                 hasAnsweredCurrentQuestion = session.hasAnsweredCurrentQuestion
@@ -174,7 +178,7 @@ private fun PlayScreen(
         Button(
             onClick = {
                 session.nextQuestion()
-                lastAnswerWasCorrect = null
+                selectedAnswerIndex = null
                 hasAnsweredCurrentQuestion = session.hasAnsweredCurrentQuestion
             },
             enabled = hasAnsweredCurrentQuestion,
@@ -197,8 +201,7 @@ private fun PlayScreen(
 private fun Header(
     mode: GameMode,
     correctCount: Int,
-    answeredCount: Int,
-    lastAnswerWasCorrect: Boolean?
+    answeredCount: Int
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
@@ -214,18 +217,6 @@ private fun Header(
             text = "Score: $correctCount / $answeredCount",
             style = MaterialTheme.typography.bodyLarge
         )
-        lastAnswerWasCorrect?.let { wasCorrect ->
-            Text(
-                text = if (wasCorrect) "Correct" else "Try the next one",
-                color = if (wasCorrect) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.error
-                },
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
     }
 }
 
@@ -233,6 +224,8 @@ private fun Header(
 private fun AnswerChoices(
     choices: List<String>,
     enabled: Boolean,
+    selectedAnswerIndex: Int?,
+    correctAnswerIndex: Int,
     onAnswerSelected: (Int) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -249,9 +242,20 @@ private fun AnswerChoices(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     rowChoices.forEach { (index, choice) ->
+                        val answerColor = answerButtonColor(
+                            index = index,
+                            selectedAnswerIndex = selectedAnswerIndex,
+                            correctAnswerIndex = correctAnswerIndex
+                        )
                         ElevatedButton(
                             onClick = { onAnswerSelected(index) },
                             enabled = enabled,
+                            colors = ButtonDefaults.elevatedButtonColors(
+                                containerColor = answerColor.containerColor,
+                                contentColor = answerColor.contentColor,
+                                disabledContainerColor = answerColor.containerColor,
+                                disabledContentColor = answerColor.contentColor
+                            ),
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(14.dp)
                         ) {
@@ -269,6 +273,44 @@ private fun AnswerChoices(
             }
     }
 }
+
+@Composable
+private fun answerButtonColor(
+    index: Int,
+    selectedAnswerIndex: Int?,
+    correctAnswerIndex: Int
+): AnswerButtonColor {
+    if (selectedAnswerIndex == null) {
+        return AnswerButtonColor(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        )
+    }
+
+    if (index == correctAnswerIndex) {
+        return AnswerButtonColor(
+            containerColor = Color(0xFF2E7D32),
+            contentColor = Color.White
+        )
+    }
+
+    if (index == selectedAnswerIndex) {
+        return AnswerButtonColor(
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = MaterialTheme.colorScheme.onError
+        )
+    }
+
+    return AnswerButtonColor(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+private data class AnswerButtonColor(
+    val containerColor: Color,
+    val contentColor: Color
+)
 
 private val GameMode.label: String
     get() = name.lowercase()
