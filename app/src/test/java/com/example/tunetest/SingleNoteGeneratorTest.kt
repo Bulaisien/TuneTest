@@ -17,7 +17,7 @@ class SingleNoteGeneratorTest {
     }
 
     @Test
-    fun noteIsCohesiveWithCorrectAnswer() {
+    fun promptIsCohesiveWithCorrectAnswer() {
         repeat(100) {
             val question = SingleNoteGenerator.generate()
             if (question.audioPrompt !is AudioPrompt.SingleNote) fail("Audio prompt is not SingleNote")
