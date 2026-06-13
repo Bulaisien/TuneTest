@@ -2,6 +2,7 @@ package com.example.tunetest.musictheory
 
 object MTConsts {
 
+    // These lists must be in order because other parts depend on that fact.
     val NOTE_LIST = listOf(
         "C", "C#", "D", "D#", "E", "F",
         "F#", "G", "G#", "A", "A#", "B"
