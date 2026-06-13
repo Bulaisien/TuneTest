@@ -12,23 +12,16 @@ object MTConsts {
         "Major 3rd", "Perfect 4th", "Tritone", "Perfect 5th",
         "Minor 6th", "Major 6th", "Minor 7th", "Major 7th", "Octave"
     )
-    val TRIAD_QUALITY_LIST = TriadQuality.entries.map { q -> q.name }
+    val TRIAD_QUALITY_LIST = TriadQuality.entries.map { it.name }
 
     const val FIRST_MIDI_NUMBER = 60
     const val LAST_MIDI_NUMBER = 71
+    val MIDI_TO_NAME: Map<Int, String> =
+        (FIRST_MIDI_NUMBER..LAST_MIDI_NUMBER).associateWith { midiToName(it) }
 
-    val MIDI_TO_NAME = mapOf(
-        60 to "C4",
-        61 to "C#4",
-        62 to "D4",
-        63 to "D#4",
-        64 to "E4",
-        65 to "F4",
-        66 to "F#4",
-        67 to "G4",
-        68 to "G#4",
-        69 to "A4",
-        70 to "A#4",
-        71 to "B4",
-    )
+    fun midiToName(midiNumber: Int): String {
+        val noteName = NOTE_LIST[midiNumber % NOTE_LIST.size]
+        val octave = (midiNumber / NOTE_LIST.size) - 1
+        return "$noteName$octave"
+    }
 }
